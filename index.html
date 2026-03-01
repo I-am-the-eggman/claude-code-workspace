@@ -184,6 +184,33 @@ p { color: rgba(255,255,255,0.6); }
 .pain-card h3 { margin-bottom: 12px; color: #fff; }
 .pain-card p { font-size: 0.9rem; }
 
+/* ===== 04a Solution Method Cards ===== */
+.solution-method-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;
+  margin-top: 40px; max-width: 800px; margin-left: auto; margin-right: auto;
+}
+.solution-method-card {
+  padding: 32px; text-align: center; transition: all 0.3s ease;
+}
+.solution-method-card:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(249,115,22,0.3);
+  transform: translateY(-4px);
+}
+.solution-method-icon {
+  width: 56px; height: 56px; margin: 0 auto 20px;
+  background: linear-gradient(135deg, rgba(249,115,22,0.15), rgba(244,63,94,0.15));
+  border: 1px solid rgba(249,115,22,0.2);
+  border-radius: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+}
+.solution-method-card h3 { margin-bottom: 10px; }
+.solution-method-card p { font-size: 0.9rem; }
+@media (max-width: 768px) {
+  .solution-method-grid { grid-template-columns: 1fr; }
+}
+
 /* ===== 04 Video + Solution ===== */
 .solution-section { position: relative; overflow: hidden; }
 .solution-section .glow-orange { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px; height: 800px; }
@@ -543,9 +570,9 @@ p { color: rgba(255,255,255,0.6); }
         <span class="hero-eyebrow">中古車販売店のための業務効率化クラウド</span>
         <h1>バラバラのシステムに、<br>もう<span class="text-gradient">振り回されない。</span></h1>
         <p class="hero-desc">
-          車両管理、顧客管理、経理…<br>
-          中古車販売に必要な"武器"がすべて揃ったクラウドサービス。<br>
-          Arsenal で、あなたの店舗運営を一つにまとめましょう。
+          車両管理、顧客対応、経理、タスク管理などバラバラだったツールをArsenalが統合。<br>
+          ミスを減らし、生産性を劇的に向上させます。<br>
+          Arsenalで"店舗運営"をひとつにまとめましょう。
         </p>
         <div class="hero-buttons">
           <a href="#" class="btn btn-primary">まずは無料で試す</a>
@@ -574,17 +601,17 @@ p { color: rgba(255,255,255,0.6); }
       <div class="pain-card glass">
         <div class="pain-icon">🔀</div>
         <h3>システムが連携しない</h3>
-        <p>車両・顧客・経理を別々のシステムに登録する二度手間。情報がバラバラで全体像が見えない。</p>
+        <p>在庫・顧客情報・経理データなどを別々のシステムに登録する二度手間が発生。情報がバラバラで使いにくい。</p>
       </div>
       <div class="pain-card glass">
         <div class="pain-icon">👤</div>
         <h3>タスクが属人化</h3>
-        <p>誰が何をやるか見えず、やり忘れが発生。ベテランの退職でノウハウも失われるリスク。</p>
+        <p>誰が何をやるか見えず、タスクの見落としや抜け漏れが発生。ベテランの退職でノウハウも失われるリスク。</p>
       </div>
       <div class="pain-card glass">
         <div class="pain-icon">⚠️</div>
         <h3>手入力ミスが多発</h3>
-        <p>システム間の転記作業でデータの不一致が常態化。ミスの修正に時間を奪われる。</p>
+        <p>システム間の転記作業でコピペのミスが発生。修正作業に時間を奪われる。</p>
       </div>
     </div>
   </div>
@@ -599,6 +626,19 @@ p { color: rgba(255,255,255,0.6); }
     <div class="text-center">
       <h2>その課題、<span class="text-gradient">Arsenal</span> がすべて解決します。</h2>
       <p>中古車販売に必要な業務をワンストップで管理。車両・顧客・経理・タスク、もうバラバラにしない。</p>
+      <h3 style="margin-top: 48px; font-size: clamp(1.2rem, 2.5vw, 1.5rem);">Arsenalの<span class="text-gradient">課題解決方法</span></h3>
+    </div>
+    <div class="solution-method-grid">
+      <div class="solution-method-card glass">
+        <div class="solution-method-icon">🔗</div>
+        <h3>ワンストップ管理</h3>
+        <p>例えば、在庫管理と経理など複数のシステムを切り替える手間をゼロにします</p>
+      </div>
+      <div class="solution-method-card glass">
+        <div class="solution-method-icon">🔄</div>
+        <h3>業務フローに沿ったタスク連携</h3>
+        <p>車両の納品作業と納品先の顧客情報の更新は、ひとつの業務の流れでスムーズに行えます</p>
+      </div>
     </div>
     <div class="video-container">
       <div class="video-placeholder glass">
@@ -742,23 +782,23 @@ p { color: rgba(255,255,255,0.6); }
       </div>
       <div class="feature-card glass">
         <div class="feature-icon">💰</div>
-        <h3>在庫経理連携</h3>
-        <p>車両登録1回で経理・在庫に自動反映。二重入力と転記ミスを根絶。</p>
+        <h3>経理ソフト連携</h3>
+        <p>車両やパーツの在庫登録をすれば、経理ソフトの在庫に自動反映。二重作業と転記ミスを根絶。</p>
       </div>
       <div class="feature-card glass">
         <div class="feature-icon">✅</div>
-        <h3>タスク管理</h3>
-        <p>自動リマインドでやり忘れゼロ。誰が何をいつやるか一目瞭然。</p>
+        <h3>タスク/To Do管理</h3>
+        <p>どの担当者が何をやるか店舗全体で一目瞭然。リマインド機能も充実。</p>
       </div>
       <div class="feature-card glass">
         <div class="feature-icon">🔨</div>
-        <h3>オークション連携</h3>
-        <p>相場情報をリアルタイムで確認。仕入れ判断をデータで支援。</p>
+        <h3>カレンダー表示</h3>
+        <p>タスク/To Doがカレンダー表示と連携して予定が見やすい</p>
       </div>
       <div class="feature-card glass">
         <div class="feature-icon">💬</div>
-        <h3>社内チャット</h3>
-        <p>業務連絡をツール内で完結。外部アプリへの切り替え不要。</p>
+        <h3>業務フロー連動</h3>
+        <p>車両在庫や顧客管理などが業務フローに従って管理できる</p>
       </div>
     </div>
   </div>
