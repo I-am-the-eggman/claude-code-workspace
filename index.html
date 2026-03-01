@@ -151,7 +151,7 @@ p { color: rgba(255,255,255,0.6); }
 .hero-image-area {
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 1.5rem; height: 360px;
+  border-radius: 1.5rem; height: 420px;
   display: flex; align-items: center; justify-content: center;
   color: rgba(255,255,255,0.25); font-size: 0.9rem; text-align: center;
   position: relative; overflow: hidden;
@@ -161,6 +161,44 @@ p { color: rgba(255,255,255,0.6); }
   position: absolute; inset: 0;
   background: linear-gradient(135deg, rgba(249,115,22,0.05) 0%, rgba(244,63,94,0.05) 100%);
 }
+.hero-image-area svg { position: relative; z-index: 1; width: 100%; height: 100%; }
+
+/* Hero SVG animations */
+@keyframes dashFlow {
+  to { stroke-dashoffset: -20; }
+}
+@keyframes floatUp {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+@keyframes drawLine {
+  from { stroke-dashoffset: 800; }
+  to { stroke-dashoffset: 0; }
+}
+.hero-chaotic-line {
+  stroke-dasharray: 6 4;
+  animation: dashFlow 1.2s linear infinite;
+}
+.hero-screen-panel {
+  animation: floatUp 3s ease-in-out infinite;
+}
+.hero-screen-panel:nth-child(2) { animation-delay: 0.4s; }
+.hero-screen-panel:nth-child(3) { animation-delay: 0.8s; }
+.hero-screen-panel:nth-child(4) { animation-delay: 1.2s; }
+.hero-clean-line {
+  stroke-dasharray: 800;
+  stroke-dashoffset: 800;
+  animation: drawLine 2s ease-out 0.5s forwards;
+}
+.hero-person {
+  animation: floatUp 4s ease-in-out infinite;
+}
+.hero-person:nth-of-type(2) { animation-delay: 1s; }
+.hero-person:nth-of-type(3) { animation-delay: 2s; }
 
 /* ===== 03 Pain Points ===== */
 .pain-section { position: relative; }
@@ -582,7 +620,259 @@ p { color: rgba(255,255,255,0.6); }
         <p class="hero-note">クレジットカード不要・30日間無料</p>
       </div>
       <div class="hero-image-area">
-        <span style="position:relative;z-index:1;">複数画面を行き来する<br>煩雑さのイメージ画像</span>
+        <svg viewBox="0 0 560 420" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <defs>
+            <!-- Glow filter -->
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="4" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="glowStrong" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="8" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <!-- Screen gradient -->
+            <linearGradient id="screenGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="rgba(255,255,255,0.08)"/>
+              <stop offset="100%" stop-color="rgba(255,255,255,0.03)"/>
+            </linearGradient>
+            <linearGradient id="orangeGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#f97316"/>
+              <stop offset="100%" stop-color="#f43f5e"/>
+            </linearGradient>
+            <!-- Isometric grid pattern -->
+            <pattern id="isoGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M0 40L40 0M20 40L40 20M0 20L20 0" stroke="rgba(255,255,255,0.02)" stroke-width="0.5"/>
+            </pattern>
+          </defs>
+
+          <!-- Background grid -->
+          <rect width="560" height="420" fill="url(#isoGrid)"/>
+
+          <!-- ====== LEFT SIDE: Chaotic screens with tangled lines ====== -->
+
+          <!-- Chaotic tangled lines connecting screens -->
+          <path class="hero-chaotic-line" d="M95,95 C130,80 140,160 170,145" stroke="#f97316" stroke-width="1.5" fill="none" opacity="0.5"/>
+          <path class="hero-chaotic-line" d="M95,105 C110,140 160,110 170,200" stroke="#f97316" stroke-width="1.5" fill="none" opacity="0.4" style="animation-delay:0.2s"/>
+          <path class="hero-chaotic-line" d="M170,155 C190,180 120,230 110,250" stroke="#f97316" stroke-width="1.5" fill="none" opacity="0.5" style="animation-delay:0.4s"/>
+          <path class="hero-chaotic-line" d="M95,105 C140,120 100,200 110,250" stroke="#f97316" stroke-width="1.5" fill="none" opacity="0.3" style="animation-delay:0.6s"/>
+          <path class="hero-chaotic-line" d="M175,90 C200,130 150,170 170,210" stroke="#f97316" stroke-width="1.5" fill="none" opacity="0.4" style="animation-delay:0.3s"/>
+          <path class="hero-chaotic-line" d="M180,155 C200,190 130,200 115,260" stroke="#f97316" stroke-width="1.5" fill="none" opacity="0.35" style="animation-delay:0.5s"/>
+          <path class="hero-chaotic-line" d="M90,100 C60,170 130,190 110,260" stroke="#f97316" stroke-width="1.5" fill="none" opacity="0.3" style="animation-delay:0.7s"/>
+          <path class="hero-chaotic-line" d="M175,95 C210,110 190,180 175,210" stroke="#f97316" stroke-width="1.5" fill="none" opacity="0.4" style="animation-delay:0.15s"/>
+          <path class="hero-chaotic-line" d="M90,95 C70,140 130,150 170,150" stroke="#f97316" stroke-width="1.5" fill="none" opacity="0.35" style="animation-delay:0.8s"/>
+          <path class="hero-chaotic-line" d="M170,200 C150,230 130,240 115,255" stroke="#f97316" stroke-width="1.5" fill="none" opacity="0.45" style="animation-delay:0.25s"/>
+
+          <!-- Screen 1: Car icon (top-left) -->
+          <g class="hero-screen-panel">
+            <rect x="40" y="60" width="100" height="75" rx="10" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+            <rect x="40" y="60" width="100" height="20" rx="10" fill="rgba(255,255,255,0.04)"/>
+            <circle cx="52" cy="70" r="3" fill="#f43f5e" opacity="0.8"/>
+            <circle cx="62" cy="70" r="3" fill="#f97316" opacity="0.8"/>
+            <circle cx="72" cy="70" r="3" fill="rgba(255,255,255,0.2)"/>
+            <!-- Car icon -->
+            <g transform="translate(70,100)">
+              <path d="M-16,8 L-14,-2 L-8,-8 L8,-8 L14,-2 L16,8 Z" fill="none" stroke="#f97316" stroke-width="1.5" filter="url(#glow)"/>
+              <circle cx="-10" cy="10" r="4" fill="none" stroke="#f97316" stroke-width="1.5"/>
+              <circle cx="10" cy="10" r="4" fill="none" stroke="#f97316" stroke-width="1.5"/>
+              <line x1="-6" y1="10" x2="6" y2="10" stroke="#f97316" stroke-width="1"/>
+            </g>
+          </g>
+
+          <!-- Screen 2: Accounting/Calculator icon (top-right) -->
+          <g class="hero-screen-panel">
+            <rect x="150" y="55" width="100" height="75" rx="10" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+            <rect x="150" y="55" width="100" height="20" rx="10" fill="rgba(255,255,255,0.04)"/>
+            <circle cx="162" cy="65" r="3" fill="#f43f5e" opacity="0.8"/>
+            <circle cx="172" cy="65" r="3" fill="#f97316" opacity="0.8"/>
+            <circle cx="182" cy="65" r="3" fill="rgba(255,255,255,0.2)"/>
+            <!-- Invoice/Calculator icon -->
+            <g transform="translate(200,97)">
+              <rect x="-14" y="-12" width="28" height="32" rx="3" fill="none" stroke="#f97316" stroke-width="1.5" filter="url(#glow)"/>
+              <line x1="-8" y1="-5" x2="8" y2="-5" stroke="#f97316" stroke-width="1" opacity="0.7"/>
+              <line x1="-8" y1="0" x2="4" y2="0" stroke="#f97316" stroke-width="1" opacity="0.5"/>
+              <rect x="-8" y="6" width="7" height="5" rx="1" fill="none" stroke="#f97316" stroke-width="1" opacity="0.6"/>
+              <rect x="1" y="6" width="7" height="5" rx="1" fill="none" stroke="#f97316" stroke-width="1" opacity="0.6"/>
+              <line x1="-8" y1="15" x2="8" y2="15" stroke="#f97316" stroke-width="1" opacity="0.5"/>
+            </g>
+          </g>
+
+          <!-- Screen 3: Calendar icon (bottom-left) -->
+          <g class="hero-screen-panel">
+            <rect x="55" y="215" width="100" height="75" rx="10" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+            <rect x="55" y="215" width="100" height="20" rx="10" fill="rgba(255,255,255,0.04)"/>
+            <circle cx="67" cy="225" r="3" fill="#f43f5e" opacity="0.8"/>
+            <circle cx="77" cy="225" r="3" fill="#f97316" opacity="0.8"/>
+            <circle cx="87" cy="225" r="3" fill="rgba(255,255,255,0.2)"/>
+            <!-- Calendar icon -->
+            <g transform="translate(105,257)">
+              <rect x="-14" y="-10" width="28" height="26" rx="3" fill="none" stroke="#f97316" stroke-width="1.5" filter="url(#glow)"/>
+              <line x1="-14" y1="-3" x2="14" y2="-3" stroke="#f97316" stroke-width="1"/>
+              <line x1="-7" y1="-14" x2="-7" y2="-8" stroke="#f97316" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="7" y1="-14" x2="7" y2="-8" stroke="#f97316" stroke-width="1.5" stroke-linecap="round"/>
+              <!-- Calendar grid dots -->
+              <circle cx="-7" cy="3" r="1.5" fill="#f97316" opacity="0.6"/>
+              <circle cx="0" cy="3" r="1.5" fill="#f97316" opacity="0.6"/>
+              <circle cx="7" cy="3" r="1.5" fill="#f97316" opacity="0.6"/>
+              <circle cx="-7" cy="10" r="1.5" fill="#f97316" opacity="0.4"/>
+              <circle cx="0" cy="10" r="1.5" fill="#f43f5e" opacity="0.8"/>
+              <circle cx="7" cy="10" r="1.5" fill="#f97316" opacity="0.4"/>
+            </g>
+          </g>
+
+          <!-- Screen 4: Wrench/Maintenance icon (bottom-right) -->
+          <g class="hero-screen-panel">
+            <rect x="155" y="175" width="100" height="75" rx="10" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+            <rect x="155" y="175" width="100" height="20" rx="10" fill="rgba(255,255,255,0.04)"/>
+            <circle cx="167" cy="185" r="3" fill="#f43f5e" opacity="0.8"/>
+            <circle cx="177" cy="185" r="3" fill="#f97316" opacity="0.8"/>
+            <circle cx="187" cy="185" r="3" fill="rgba(255,255,255,0.2)"/>
+            <!-- Wrench icon -->
+            <g transform="translate(205,218)">
+              <path d="M-10,-10 L-4,-4 L-6,0 L-12,-2 Z" fill="none" stroke="#f97316" stroke-width="1.5" filter="url(#glow)"/>
+              <line x1="-5" y1="-3" x2="6" y2="8" stroke="#f97316" stroke-width="2" stroke-linecap="round"/>
+              <path d="M6,8 L12,6 L14,10 L10,14 L6,12 Z" fill="none" stroke="#f97316" stroke-width="1.5"/>
+              <!-- Second wrench (crossed) -->
+              <path d="M10,-10 L4,-4 L6,0 L12,-2 Z" fill="none" stroke="#f97316" stroke-width="1.5" opacity="0.6"/>
+              <line x1="5" y1="-3" x2="-6" y2="8" stroke="#f97316" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+            </g>
+          </g>
+
+          <!-- Pictogram people interacting with screens -->
+          <!-- Person 1 (near car screen) -->
+          <g class="hero-person" transform="translate(30,110)">
+            <circle cx="0" cy="0" r="6" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+            <line x1="0" y1="6" x2="0" y2="22" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="0" y1="12" x2="10" y2="8" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="0" y1="22" x2="-5" y2="32" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="0" y1="22" x2="5" y2="32" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linecap="round"/>
+          </g>
+
+          <!-- Person 2 (near wrench screen) -->
+          <g class="hero-person" transform="translate(265,200)">
+            <circle cx="0" cy="0" r="6" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+            <line x1="0" y1="6" x2="0" y2="22" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="0" y1="12" x2="-10" y2="8" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="0" y1="22" x2="-5" y2="32" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="0" y1="22" x2="5" y2="32" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linecap="round"/>
+          </g>
+
+          <!-- Person 3 (near calendar) -->
+          <g class="hero-person" transform="translate(45,270)">
+            <circle cx="0" cy="0" r="6" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+            <line x1="0" y1="6" x2="0" y2="22" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="0" y1="12" x2="10" y2="10" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="0" y1="22" x2="-5" y2="32" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="0" y1="22" x2="5" y2="32" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linecap="round"/>
+          </g>
+
+          <!-- ====== CENTER: Converging arrow / funnel ====== -->
+          <!-- Converging lines from chaotic side to clean path -->
+          <path d="M260,90 C300,120 310,170 330,200" stroke="url(#orangeGrad)" stroke-width="1.5" fill="none" opacity="0.5"/>
+          <path d="M260,150 C290,160 310,180 330,200" stroke="url(#orangeGrad)" stroke-width="1.5" fill="none" opacity="0.5"/>
+          <path d="M260,210 C280,210 310,200 330,200" stroke="url(#orangeGrad)" stroke-width="1.5" fill="none" opacity="0.5"/>
+          <path d="M260,280 C290,260 310,230 330,200" stroke="url(#orangeGrad)" stroke-width="1.5" fill="none" opacity="0.5"/>
+
+          <!-- Funnel/merge point glow -->
+          <circle cx="330" cy="200" r="16" fill="rgba(249,115,22,0.15)" filter="url(#glowStrong)"/>
+          <circle cx="330" cy="200" r="8" fill="rgba(249,115,22,0.3)"/>
+          <circle cx="330" cy="200" r="3" fill="#f97316"/>
+
+          <!-- ====== RIGHT SIDE: Clean organized flow ====== -->
+          <!-- Clean single line -->
+          <line class="hero-clean-line" x1="346" y1="200" x2="520" y2="200" stroke="url(#orangeGrad)" stroke-width="3" filter="url(#glow)" stroke-linecap="round"/>
+
+          <!-- Arrow head -->
+          <g class="hero-clean-line" style="animation-delay: 2s;">
+            <polygon points="520,190 540,200 520,210" fill="#f97316" filter="url(#glow)" opacity="0.9"/>
+          </g>
+
+          <!-- Unified Arsenal screen (right side) -->
+          <g class="hero-screen-panel" style="animation-duration: 4s;">
+            <rect x="380" y="100" width="150" height="200" rx="14" fill="rgba(255,255,255,0.06)" stroke="rgba(249,115,22,0.3)" stroke-width="1.5"/>
+            <rect x="380" y="100" width="150" height="28" rx="14" fill="rgba(249,115,22,0.08)"/>
+            <!-- Window dots -->
+            <circle cx="395" cy="114" r="3.5" fill="#f43f5e" opacity="0.8"/>
+            <circle cx="407" cy="114" r="3.5" fill="#f97316" opacity="0.8"/>
+            <circle cx="419" cy="114" r="3.5" fill="rgba(255,255,255,0.2)"/>
+            <!-- ARSENAL label area -->
+            <rect x="435" y="109" width="55" height="10" rx="2" fill="rgba(249,115,22,0.15)"/>
+
+            <!-- Mini car icon in unified screen -->
+            <g transform="translate(410,150)">
+              <rect x="-14" y="-10" width="28" height="20" rx="4" fill="rgba(249,115,22,0.08)" stroke="rgba(249,115,22,0.25)" stroke-width="1"/>
+              <path d="M-6,2 L-4,-4 L4,-4 L6,2" fill="none" stroke="#f97316" stroke-width="1" opacity="0.8"/>
+              <circle cx="-4" cy="4" r="2" fill="#f97316" opacity="0.6"/>
+              <circle cx="4" cy="4" r="2" fill="#f97316" opacity="0.6"/>
+            </g>
+            <!-- Mini calculator icon -->
+            <g transform="translate(455,150)">
+              <rect x="-14" y="-10" width="28" height="20" rx="4" fill="rgba(249,115,22,0.08)" stroke="rgba(249,115,22,0.25)" stroke-width="1"/>
+              <rect x="-7" y="-5" width="14" height="12" rx="2" fill="none" stroke="#f97316" stroke-width="1" opacity="0.7"/>
+              <line x1="-4" y1="-2" x2="4" y2="-2" stroke="#f97316" stroke-width="0.8" opacity="0.5"/>
+              <circle cx="-3" cy="3" r="1" fill="#f97316" opacity="0.5"/>
+              <circle cx="3" cy="3" r="1" fill="#f97316" opacity="0.5"/>
+            </g>
+            <!-- Mini calendar icon -->
+            <g transform="translate(410,190)">
+              <rect x="-14" y="-10" width="28" height="20" rx="4" fill="rgba(249,115,22,0.08)" stroke="rgba(249,115,22,0.25)" stroke-width="1"/>
+              <rect x="-7" y="-5" width="14" height="12" rx="2" fill="none" stroke="#f97316" stroke-width="1" opacity="0.7"/>
+              <line x1="-7" y1="-1" x2="7" y2="-1" stroke="#f97316" stroke-width="0.8"/>
+              <circle cx="-3" cy="3" r="1" fill="#f97316" opacity="0.5"/>
+              <circle cx="3" cy="3" r="1" fill="#f43f5e" opacity="0.6"/>
+            </g>
+            <!-- Mini wrench icon -->
+            <g transform="translate(455,190)">
+              <rect x="-14" y="-10" width="28" height="20" rx="4" fill="rgba(249,115,22,0.08)" stroke="rgba(249,115,22,0.25)" stroke-width="1"/>
+              <line x1="-4" y1="-4" x2="4" y2="4" stroke="#f97316" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+              <circle cx="-5" cy="-5" r="3" fill="none" stroke="#f97316" stroke-width="1" opacity="0.5"/>
+            </g>
+
+            <!-- Connected flow lines inside unified screen -->
+            <path d="M410,160 L410,180" stroke="rgba(249,115,22,0.2)" stroke-width="1" stroke-dasharray="2 2"/>
+            <path d="M455,160 L455,180" stroke="rgba(249,115,22,0.2)" stroke-width="1" stroke-dasharray="2 2"/>
+            <path d="M424,150 L441,150" stroke="rgba(249,115,22,0.2)" stroke-width="1" stroke-dasharray="2 2"/>
+            <path d="M424,190 L441,190" stroke="rgba(249,115,22,0.2)" stroke-width="1" stroke-dasharray="2 2"/>
+
+            <!-- Checkmark badge -->
+            <circle cx="510" cy="120" r="12" fill="#22c55e" opacity="0.9" filter="url(#glow)"/>
+            <polyline points="504,120 508,124 516,116" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+            <!-- Status bar -->
+            <rect x="395" y="220" width="120" height="6" rx="3" fill="rgba(255,255,255,0.06)"/>
+            <rect x="395" y="220" width="90" height="6" rx="3" fill="url(#orangeGrad)" opacity="0.6"/>
+
+            <!-- Bottom label area -->
+            <rect x="395" y="235" width="50" height="8" rx="2" fill="rgba(255,255,255,0.05)"/>
+            <rect x="395" y="248" width="80" height="8" rx="2" fill="rgba(255,255,255,0.03)"/>
+
+            <!-- Bottom: Organized text lines -->
+            <rect x="395" y="265" width="120" height="20" rx="6" fill="rgba(34,197,94,0.08)" stroke="rgba(34,197,94,0.2)" stroke-width="1"/>
+            <rect x="401" y="271" width="40" height="8" rx="2" fill="rgba(34,197,94,0.2)"/>
+          </g>
+
+          <!-- Labels -->
+          <!-- "Chaos" label left -->
+          <text x="130" y="340" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-size="11" font-family="'Noto Sans JP', sans-serif">バラバラの業務ツール</text>
+          <!-- Arrow label -->
+          <text x="330" y="240" text-anchor="middle" fill="rgba(249,115,22,0.5)" font-size="10" font-family="'Noto Sans JP', sans-serif">統合</text>
+          <!-- "Organized" label right -->
+          <text x="455" y="340" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-size="11" font-family="'Noto Sans JP', sans-serif">Arsenal ですべて一元管理</text>
+
+          <!-- Decorative particles -->
+          <circle cx="290" cy="100" r="2" fill="#f97316" opacity="0.3">
+            <animate attributeName="opacity" values="0.3;0.7;0.3" dur="2s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="310" cy="280" r="1.5" fill="#f43f5e" opacity="0.3">
+            <animate attributeName="opacity" values="0.2;0.6;0.2" dur="2.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="350" cy="140" r="1.5" fill="#f97316" opacity="0.2">
+            <animate attributeName="opacity" values="0.2;0.5;0.2" dur="3s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="340" cy="260" r="2" fill="#f97316" opacity="0.25">
+            <animate attributeName="opacity" values="0.15;0.5;0.15" dur="2.2s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
       </div>
     </div>
   </div>
