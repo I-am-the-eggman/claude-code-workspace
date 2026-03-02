@@ -503,6 +503,7 @@ p { color: rgba(255,255,255,0.6); }
   display: flex; align-items: center; justify-content: center; gap: 8px;
   margin-top: 12px; font-size: 0.85rem; color: rgba(255,255,255,0.4);
 }
+.visually-hidden { position: absolute; overflow: hidden; clip: rect(0 0 0 0); width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; }
 
 /* ===== 11 FAQ ===== */
 .faq-section { position: relative; }
@@ -943,71 +944,74 @@ p { color: rgba(255,255,255,0.6); }
       </div>
 
       <div class="contact-form-card glass">
-        <form>
+        <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="contact-form">
+          <input type="hidden" name="form-name" value="contact">
+          <p class="visually-hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
+
           <div class="form-row">
             <div class="form-group half">
-              <label class="form-label">お名前<span class="required">*必須</span></label>
-              <input type="text" class="form-input" placeholder="例：山田 太郎">
+              <label class="form-label" for="name">お名前<span class="required">*必須</span></label>
+              <input type="text" name="name" id="name" class="form-input" placeholder="例：山田 太郎" required>
             </div>
             <div class="form-group half">
-              <label class="form-label">会社名 / 店舗名<span class="required">*必須</span></label>
-              <input type="text" class="form-input" placeholder="例：○○自動車 株式会社">
+              <label class="form-label" for="company">会社名 / 店舗名<span class="required">*必須</span></label>
+              <input type="text" name="company" id="company" class="form-input" placeholder="例：○○自動車 株式会社" required>
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group half">
-              <label class="form-label">メールアドレス<span class="required">*必須</span></label>
-              <input type="email" class="form-input" placeholder="例：info@example.com">
+              <label class="form-label" for="email">メールアドレス<span class="required">*必須</span></label>
+              <input type="email" name="email" id="email" class="form-input" placeholder="例：info@example.com" required>
             </div>
             <div class="form-group half">
-              <label class="form-label">電話番号<span class="optional">任意</span></label>
-              <input type="tel" class="form-input" placeholder="例：03-1234-5678">
+              <label class="form-label" for="phone">電話番号<span class="optional">任意</span></label>
+              <input type="tel" name="phone" id="phone" class="form-input" placeholder="例：03-1234-5678">
             </div>
           </div>
 
           <div class="form-group">
-            <label class="form-label">お問い合わせ種別<span class="required">*必須</span></label>
-            <select class="form-select">
+            <label class="form-label" for="inquiry-type">お問い合わせ種別<span class="required">*必須</span></label>
+            <select name="inquiry-type" id="inquiry-type" class="form-select" required>
               <option value="" disabled selected>選択してください</option>
-              <option value="consultation">導入のご相談</option>
-              <option value="estimate">お見積もりのご依頼</option>
-              <option value="question">機能についてのご質問</option>
-              <option value="document">資料請求</option>
-              <option value="other">その他</option>
+              <option value="導入のご相談">導入のご相談</option>
+              <option value="お見積もりのご依頼">お見積もりのご依頼</option>
+              <option value="機能についてのご質問">機能についてのご質問</option>
+              <option value="資料請求">資料請求</option>
+              <option value="その他">その他</option>
             </select>
           </div>
 
           <div class="form-row">
             <div class="form-group half">
-              <label class="form-label">従業員数<span class="optional">任意</span></label>
-              <select class="form-select">
+              <label class="form-label" for="employees">従業員数<span class="optional">任意</span></label>
+              <select name="employees" id="employees" class="form-select">
                 <option value="" disabled selected>選択してください</option>
-                <option value="1-5">1〜5名</option>
-                <option value="6-20">6〜20名</option>
-                <option value="21-50">21〜50名</option>
-                <option value="51+">51名以上</option>
+                <option value="1〜5名">1〜5名</option>
+                <option value="6〜20名">6〜20名</option>
+                <option value="21〜50名">21〜50名</option>
+                <option value="51名以上">51名以上</option>
               </select>
             </div>
             <div class="form-group half">
-              <label class="form-label">現在使用中の車販システム<span class="optional">任意</span></label>
-              <select class="form-select">
+              <label class="form-label" for="current-system">現在使用中の車販システム<span class="optional">任意</span></label>
+              <select name="current-system" id="current-system" class="form-select">
                 <option value="" disabled selected>選択してください</option>
-                <option value="jocar">JOCAR</option>
+                <option value="JOCAR">JOCAR</option>
                 <option value="symphony">symphony</option>
-                <option value="broadleaf">ブロードリーフ</option>
-                <option value="other">その他</option>
+                <option value="ブロードリーフ">ブロードリーフ</option>
+                <option value="その他">その他</option>
               </select>
             </div>
           </div>
 
           <div class="form-group">
-            <label class="form-label">お問い合わせ内容<span class="required">*必須</span></label>
-            <textarea class="form-textarea" placeholder="お問い合わせ内容をご記入ください"></textarea>
+            <label class="form-label" for="message">お問い合わせ内容<span class="required">*必須</span></label>
+            <textarea name="message" id="message" class="form-textarea" placeholder="お問い合わせ内容をご記入ください" required></textarea>
           </div>
 
           <div class="form-checkbox">
-            <input type="checkbox" id="privacy">
+            <input type="checkbox" id="privacy" required>
             <label for="privacy"><a href="#">プライバシーポリシー</a>に同意する</label>
           </div>
 
@@ -1020,6 +1024,13 @@ p { color: rgba(255,255,255,0.6); }
             <span>📞 お電話でのお問い合わせ：03-XXXX-XXXX（平日 9:00〜18:00）</span>
           </div>
         </form>
+
+        <!-- 送信完了メッセージ -->
+        <div id="form-success" style="display:none; text-align:center; padding:60px 20px;">
+          <div style="font-size:3rem; margin-bottom:16px;">✅</div>
+          <h3 style="font-size:1.4rem; margin-bottom:12px;">お問い合わせありがとうございます</h3>
+          <p style="color:rgba(255,255,255,0.6); line-height:1.8;">内容を確認のうえ、1営業日以内にご連絡いたします。<br>しばらくお待ちください。</p>
+        </div>
       </div>
     </div>
   </div>
@@ -1105,5 +1116,32 @@ p { color: rgba(255,255,255,0.6); }
   </div>
 </footer>
 
+<script>
+document.getElementById('contact-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var form = e.target;
+  var btn = form.querySelector('button[type="submit"]');
+  btn.disabled = true;
+  btn.textContent = '送信中...';
+  fetch('/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams(new FormData(form)).toString()
+  }).then(function(res) {
+    if (res.ok) {
+      form.style.display = 'none';
+      document.getElementById('form-success').style.display = 'block';
+    } else {
+      btn.disabled = false;
+      btn.textContent = '送信する';
+      alert('送信に失敗しました。お手数ですがもう一度お試しください。');
+    }
+  }).catch(function() {
+    btn.disabled = false;
+    btn.textContent = '送信する';
+    alert('ネットワークエラーが発生しました。お手数ですがもう一度お試しください。');
+  });
+});
+</script>
 </body>
 </html>
