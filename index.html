@@ -455,7 +455,7 @@
         },
         body: JSON.stringify({
           model: "claude-sonnet-4-5",
-          max_tokens: 1024,
+          max_tokens: 4096,
           system: "日計票の画像から金額データを抽出してください。必ずJSON形式のみで返答し、preambleやmarkdownのコードブロック記号は含めないこと。形式: {\"rows\":[{\"amount\":数値,\"type\":\"in\"または\"out\"}]} 入金（前受金・繰越金など大きな金額で左欄に記載）はin、支出はout。合計・小計行は除外。",
           messages: [{
             role: "user",
@@ -474,8 +474,9 @@
 
       const data = await res.json();
       const rawText = data.content?.[0]?.text || "";
-      // ```json ... ``` や ``` ... ``` を除去
-      const text = rawText.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/, "").trim();
+      // コードブロック記号を除去してからJSONを抽出
+      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+      const text = jsonMatch ? jsonMatch[0] : rawText.trim();
 
       let parsed;
       try { parsed = JSON.parse(text); }
