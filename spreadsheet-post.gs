@@ -34,7 +34,7 @@
  * ============================================================
  */
 
-var HEADER = ["日付", "メモ", "金額", "種別"];
+var HEADER = ["日付", "金額", "種別"];
 
 function doPost(e) {
   var output = ContentService.createTextOutput();
@@ -73,7 +73,7 @@ function doPost(e) {
     }
 
     var data = rows.map(function (row) {
-      return [row.date || "", row.memo || "", row.amount || 0, row.type || ""];
+      return [row.date || "", row.amount || 0, row.type || ""];
     });
 
     sheet.getRange(sheet.getLastRow() + 1, 1, data.length, HEADER.length).setValues(data);

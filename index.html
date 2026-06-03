@@ -85,8 +85,7 @@
     }
 
     input[type="text"],
-    input[type="password"],
-    input[type="date"] {
+    input[type="password"] {
       width: 100%;
       padding: 10px 12px;
       border: 1px solid #ddd;
@@ -150,12 +149,68 @@
     #drop-zone .drop-icon { font-size: 2rem; margin-bottom: 8px; }
     #file-input { display: none; }
 
-    #preview-wrap { margin-bottom: 14px; display: none; }
-    #preview-img {
+    /* 複数プレビュー */
+    #preview-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .preview-item {
+      position: relative;
+      width: calc(33.33% - 6px);
+    }
+
+    .preview-item img {
       width: 100%;
-      border-radius: 8px;
-      object-fit: contain;
-      max-height: 300px;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 2px solid #ddd;
+    }
+
+    .preview-item .remove-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(0,0,0,.55);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      font-size: .75rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview-item .file-name {
+      font-size: .7rem;
+      color: #666;
+      text-align: center;
+      margin-top: 3px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* 読み取り進捗 */
+    .progress-bar-wrap {
+      background: #eee;
+      border-radius: 4px;
+      height: 6px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #4a90e2;
+      transition: width .3s;
     }
 
     .result-table-wrap { overflow-x: auto; margin-bottom: 14px; }
@@ -196,8 +251,6 @@
       margin-bottom: 16px;
       flex-wrap: wrap;
     }
-
-    .total-row span { color: #555; }
 
     .msg {
       padding: 10px 14px;
@@ -265,19 +318,11 @@
     <div id="drop-zone">
       <div class="drop-icon">📷</div>
       <div>クリックまたは写真をドラッグ＆ドロップ</div>
-      <div style="font-size:.8rem;margin-top:4px;color:#aaa">JPG・PNG など</div>
+      <div style="font-size:.8rem;margin-top:4px;color:#aaa">複数枚まとめて選択可 · JPG・PNG など</div>
     </div>
-    <input type="file" id="file-input" accept="image/*" />
+    <input type="file" id="file-input" accept="image/*" multiple />
 
-    <div id="preview-wrap">
-      <img id="preview-img" alt="プレビュー" />
-    </div>
-
-    <label for="date-input">日付</label>
-    <input type="date" id="date-input" />
-
-    <label for="memo-input">メモ（任意）</label>
-    <input type="text" id="memo-input" placeholder="例：6月分" />
+    <div id="preview-list"></div>
 
     <div id="upload-msg"></div>
 
@@ -290,12 +335,16 @@
   <section class="card hidden" id="result-panel">
     <h2>読み取り結果</h2>
 
+    <div class="progress-bar-wrap" id="progress-wrap">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
     <div class="result-table-wrap">
       <table>
         <thead>
           <tr>
             <th style="width:36px"></th>
-            <th>#</th>
+            <th>日付</th>
             <th>金額</th>
             <th>種別</th>
           </tr>
@@ -319,8 +368,8 @@
 </div>
 <script>
   // ─── 状態 ───────────────────────────────────────────────
-  let imageBase64 = null;
-  let imageMime   = "image/jpeg";
+  // { base64: string, mime: string, name: string }[]
+  let pendingFiles = [];
 
   // ─── DOM ────────────────────────────────────────────────
   const settingsPanel = document.getElementById("settings-panel");
@@ -332,16 +381,13 @@
   const sendBtn       = document.getElementById("send-btn");
   const dropZone      = document.getElementById("drop-zone");
   const fileInput     = document.getElementById("file-input");
-  const previewWrap   = document.getElementById("preview-wrap");
-  const previewImg    = document.getElementById("preview-img");
-  const dateInput     = document.getElementById("date-input");
-  const memoInput     = document.getElementById("memo-input");
+  const previewList   = document.getElementById("preview-list");
   const resultTbody   = document.getElementById("result-tbody");
+  const progressWrap  = document.getElementById("progress-wrap");
+  const progressBar   = document.getElementById("progress-bar");
 
   // ─── 初期化 ─────────────────────────────────────────────
   function init() {
-    dateInput.value = new Date().toISOString().slice(0, 10);
-
     const s = loadSettings();
     if (s.apiKey)    document.getElementById("api-key").value    = s.apiKey;
     if (s.gasUrl)    document.getElementById("gas-url").value    = s.gasUrl;
@@ -390,7 +436,7 @@
     const warn = document.createElement("div");
     warn.className = "msg msg-error";
     warn.style.margin = "0 0 12px";
-    warn.innerHTML = "⚠️ このファイルは <code>file://</code> で開かれています。Anthropic APIのCORS制限により<strong>動作しません</strong>。<br>ローカルサーバー経由（例: <code>npx serve .</code> や VS Code Live Server）でアクセスしてください。";
+    warn.innerHTML = "⚠️ このファイルは <code>file://</code> で開かれています。Anthropic APIのCORS制限により<strong>動作しません</strong>。<br>ローカルサーバー経由（例: <code>node proxy.js</code>）でアクセスしてください。";
     uploadPanel.querySelector("h2").after(warn);
   }
 
@@ -406,115 +452,155 @@
   dropZone.addEventListener("drop", (e) => {
     e.preventDefault();
     dropZone.classList.remove("dragover");
-    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+    addFiles(Array.from(e.dataTransfer.files));
   });
 
   fileInput.addEventListener("change", () => {
-    if (fileInput.files[0]) handleFile(fileInput.files[0]);
+    addFiles(Array.from(fileInput.files));
+    fileInput.value = "";
   });
 
-  function handleFile(file) {
-    if (!file.type.startsWith("image/")) {
+  function addFiles(files) {
+    const images = files.filter(f => f.type.startsWith("image/"));
+    if (images.length === 0) {
       showMsg("upload-msg", "画像ファイルを選択してください", "error");
       return;
     }
-    imageMime = file.type || "image/jpeg";
+    clearMsg("upload-msg");
+    resultPanel.classList.add("hidden");
 
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const dataUrl = ev.target.result;
-      imageBase64 = dataUrl.split(",")[1];
-      previewImg.src = dataUrl;
-      previewWrap.style.display = "block";
-      readBtn.disabled = false;
-      clearMsg("upload-msg");
-      resultPanel.classList.add("hidden");
-    };
-    reader.readAsDataURL(file);
+    images.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const dataUrl = ev.target.result;
+        const entry = { base64: dataUrl.split(",")[1], mime: file.type || "image/jpeg", name: file.name };
+        pendingFiles.push(entry);
+        renderPreviewItem(entry, pendingFiles.length - 1);
+        readBtn.disabled = false;
+      };
+      reader.readAsDataURL(file);
+    });
   }
 
-  // ─── Claude API 呼び出し ────────────────────────────────
+  function renderPreviewItem(entry, idx) {
+    const div = document.createElement("div");
+    div.className = "preview-item";
+    div.dataset.idx = idx;
+    div.innerHTML = `
+      <img src="data:${entry.mime};base64,${entry.base64}" alt="${entry.name}" />
+      <button class="remove-btn" title="削除">✕</button>
+      <div class="file-name">${entry.name}</div>
+    `;
+    div.querySelector(".remove-btn").addEventListener("click", () => {
+      pendingFiles.splice(idx, 1);
+      div.remove();
+      // インデックス振り直し
+      previewList.querySelectorAll(".preview-item").forEach((el, i) => el.dataset.idx = i);
+      if (pendingFiles.length === 0) readBtn.disabled = true;
+    });
+    previewList.appendChild(div);
+  }
+
+  // ─── Claude API 呼び出し（1枚分） ──────────────────────
+  async function readOneImage(entry, apiBase, apiKey) {
+    const res = await fetch(`${apiBase}/v1/messages`, {
+      method: "POST",
+      headers: {
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-5",
+        max_tokens: 4096,
+        system: "日計票の画像から金額データを抽出してください。必ずJSON形式のみで返答し、preambleやmarkdownのコードブロック記号は含めないこと。写真の右上に書かれている日付も読み取ること。形式: {\"date\":\"YYYY-MM-DD\",\"rows\":[{\"amount\":数値,\"type\":\"in\"または\"out\"}]} 日付が読み取れない場合は date を null とする。入金（前受金・繰越金など大きな金額で左欄に記載）はin、支出はout。合計・小計行は除外。",
+        messages: [{
+          role: "user",
+          content: [
+            { type: "image", source: { type: "base64", media_type: entry.mime, data: entry.base64 } },
+            { type: "text",  text: "この日計票から日付と金額データをJSONで抽出してください。" },
+          ],
+        }],
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error?.message || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    const rawText = data.content?.[0]?.text || "";
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    const text = jsonMatch ? jsonMatch[0] : rawText.trim();
+
+    let parsed;
+    try { parsed = JSON.parse(text); }
+    catch { throw new Error(`「${entry.name}」のAI返答をJSONとして解析できませんでした。返答: ${rawText.slice(0, 100)}`); }
+
+    if (!Array.isArray(parsed.rows) || parsed.rows.length === 0) {
+      throw new Error(`「${entry.name}」から金額データを読み取れませんでした`);
+    }
+
+    return { date: parsed.date || null, rows: parsed.rows };
+  }
+
+  // ─── 全画像を順番に読み取る ─────────────────────────────
   readBtn.addEventListener("click", async () => {
     const { apiKey, proxyUrl } = loadSettings();
-    if (!apiKey)     { showMsg("upload-msg", "APIキーが設定されていません", "error"); return; }
-    if (!imageBase64){ showMsg("upload-msg", "画像を選択してください",       "error"); return; }
+    if (!apiKey)              { showMsg("upload-msg", "APIキーが設定されていません", "error"); return; }
+    if (pendingFiles.length === 0) { showMsg("upload-msg", "画像を選択してください", "error"); return; }
 
     const apiBase = proxyUrl || "https://api.anthropic.com";
+    const total   = pendingFiles.length;
 
-    setLoading(readBtn, true, "読み取り中...");
+    setLoading(readBtn, true, `読み取り中... (0/${total})`);
     clearMsg("upload-msg");
+    resultTbody.innerHTML = "";
+    progressWrap.style.display = "block";
+    progressBar.style.width = "0%";
+    resultPanel.classList.remove("hidden");
+    uploadPanel.classList.add("hidden");
 
-    try {
-      const res = await fetch(`${apiBase}/v1/messages`, {
-        method: "POST",
-        headers: {
-          "x-api-key": apiKey,
-          "anthropic-version": "2023-06-01",
-          "content-type": "application/json",
-          "anthropic-dangerous-direct-browser-access": "true",
-        },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-5",
-          max_tokens: 4096,
-          system: "日計票の画像から金額データを抽出してください。必ずJSON形式のみで返答し、preambleやmarkdownのコードブロック記号は含めないこと。形式: {\"rows\":[{\"amount\":数値,\"type\":\"in\"または\"out\"}]} 入金（前受金・繰越金など大きな金額で左欄に記載）はin、支出はout。合計・小計行は除外。",
-          messages: [{
-            role: "user",
-            content: [
-              { type: "image", source: { type: "base64", media_type: imageMime, data: imageBase64 } },
-              { type: "text",  text: "この日計票から金額データをJSONで抽出してください。" },
-            ],
-          }],
-        }),
-      });
+    let successCount = 0;
+    const errors = [];
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err?.error?.message || `HTTP ${res.status}`);
+    for (let i = 0; i < total; i++) {
+      setLoading(readBtn, true, `読み取り中... (${i + 1}/${total})`);
+      try {
+        const { date, rows } = await readOneImage(pendingFiles[i], apiBase, apiKey);
+        appendRows(date, rows);
+        successCount++;
+      } catch (e) {
+        errors.push(e.message);
       }
+      progressBar.style.width = `${Math.round((i + 1) / total * 100)}%`;
+    }
 
-      const data = await res.json();
-      const rawText = data.content?.[0]?.text || "";
-      // コードブロック記号を除去してからJSONを抽出
-      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-      const text = jsonMatch ? jsonMatch[0] : rawText.trim();
+    progressWrap.style.display = "none";
+    setLoading(readBtn, false, "金額を読み取る");
+    readBtn.disabled = false;
 
-      let parsed;
-      try { parsed = JSON.parse(text); }
-      catch { throw new Error("AIの返答をJSONとして解析できませんでした。\n返答: " + rawText.slice(0, 200)); }
-
-      if (!Array.isArray(parsed.rows) || parsed.rows.length === 0) {
-        throw new Error("読み取れる金額データがありませんでした");
-      }
-
-      renderResult(parsed.rows);
-      uploadPanel.classList.add("hidden");
-      resultPanel.classList.remove("hidden");
-
-    } catch (e) {
-      const isFileProt = location.protocol === "file:";
-      const hint = isFileProt
-        ? "file:// で開いているためCORSエラーが発生しています。ローカルサーバー経由でアクセスしてください。"
-        : e.message.includes("fetch") || e.message.includes("network") || e.message === "Failed to fetch"
-          ? "ネットワークエラー（CORS／接続失敗）: HTTPSで配信されているか、APIキーが正しいか確認してください。"
-          : e.message;
-      showMsg("upload-msg", hint, "error");
-    } finally {
-      setLoading(readBtn, false, "金額を読み取る");
-      readBtn.disabled = false;
+    if (errors.length > 0) {
+      showMsg("result-msg", "⚠️ 一部エラー:<br>" + errors.join("<br>"), "error");
+    }
+    if (successCount === 0) {
+      uploadPanel.classList.remove("hidden");
+      resultPanel.classList.add("hidden");
     }
   });
 
-  // ─── 結果テーブル描画 ───────────────────────────────────
-  function renderResult(rows) {
-    resultTbody.innerHTML = "";
-
-    rows.forEach((row, i) => {
+  // ─── 結果テーブルへ行を追加 ─────────────────────────────
+  function appendRows(date, rows) {
+    rows.forEach((row) => {
       const tr = document.createElement("tr");
       const isIn = row.type === "in";
       tr.dataset.type = row.type;
+      tr.dataset.date = date || "";
       tr.innerHTML = `
         <td><input type="checkbox" checked class="row-check" /></td>
-        <td>${i + 1}</td>
+        <td contenteditable="true" class="date-cell">${date || ""}</td>
         <td contenteditable="true" class="amount-cell">${row.amount}</td>
         <td><span class="badge ${isIn ? "badge-in" : "badge-out"}">${isIn ? "入金" : "出金"}</span></td>
       `;
@@ -529,8 +615,7 @@
   function updateTotals() {
     let inSum = 0, outSum = 0;
     resultTbody.querySelectorAll("tr").forEach((tr) => {
-      const check = tr.querySelector(".row-check");
-      if (!check?.checked) return;
+      if (!tr.querySelector(".row-check")?.checked) return;
       const amount = parseInt(tr.querySelector(".amount-cell").textContent.replace(/,/g, ""), 10) || 0;
       if (tr.dataset.type === "in") inSum += amount;
       else outSum += amount;
@@ -544,14 +629,12 @@
     const { gasUrl, sheetName } = loadSettings();
     if (!gasUrl) { showMsg("result-msg", "GAS URLが設定されていません", "error"); return; }
 
-    const date = dateInput.value;
-    const memo = memoInput.value.trim();
     const rows = [];
-
     resultTbody.querySelectorAll("tr").forEach((tr) => {
       if (!tr.querySelector(".row-check")?.checked) return;
+      const date   = tr.querySelector(".date-cell").textContent.trim();
       const amount = parseInt(tr.querySelector(".amount-cell").textContent.replace(/,/g, ""), 10) || 0;
-      rows.push({ date, memo, amount, type: tr.dataset.type === "in" ? "入金" : "出金" });
+      rows.push({ date, amount, type: tr.dataset.type === "in" ? "入金" : "出金" });
     });
 
     if (rows.length === 0) { showMsg("result-msg", "送信する行が選択されていません", "error"); return; }
@@ -560,7 +643,6 @@
     clearMsg("result-msg");
 
     try {
-      // GAS は no-cors でないとブロックされる場合があるためレスポンスボディは読まない
       await fetch(gasUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
