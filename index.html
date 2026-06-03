@@ -444,7 +444,7 @@
           "anthropic-dangerous-direct-browser-calls": "true",
         },
         body: JSON.stringify({
-          model: "claude-sonnet-4-6",
+          model: "claude-sonnet-4-5",
           max_tokens: 1024,
           system: "日計票の画像から金額データを抽出してください。必ずJSON形式のみで返答し、preambleやmarkdownのコードブロック記号は含めないこと。形式: {\"rows\":[{\"amount\":数値,\"type\":\"in\"または\"out\"}]} 入金（前受金・繰越金など大きな金額で左欄に記載）はin、支出はout。合計・小計行は除外。",
           messages: [{
