@@ -473,11 +473,13 @@
       }
 
       const data = await res.json();
-      const text = data.content?.[0]?.text || "";
+      const rawText = data.content?.[0]?.text || "";
+      // ```json ... ``` や ``` ... ``` を除去
+      const text = rawText.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/, "").trim();
 
       let parsed;
       try { parsed = JSON.parse(text); }
-      catch { throw new Error("AIの返答をJSONとして解析できませんでした。\n返答: " + text.slice(0, 200)); }
+      catch { throw new Error("AIの返答をJSONとして解析できませんでした。\n返答: " + rawText.slice(0, 200)); }
 
       if (!Array.isArray(parsed.rows) || parsed.rows.length === 0) {
         throw new Error("読み取れる金額データがありませんでした");
