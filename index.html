@@ -345,6 +345,7 @@
           <tr>
             <th style="width:36px"></th>
             <th>日付</th>
+            <th>種銭</th>
             <th>金額</th>
             <th>種別</th>
           </tr>
@@ -514,7 +515,7 @@
       body: JSON.stringify({
         model: "claude-sonnet-4-5",
         max_tokens: 4096,
-        system: "日計票の画像から金額データを抽出してください。必ずJSON形式のみで返答し、preambleやmarkdownのコードブロック記号は含めないこと。写真の右上に書かれている日付も読み取ること。形式: {\"date\":\"YYYY-MM-DD\",\"rows\":[{\"amount\":数値,\"type\":\"in\"または\"out\"}]} 日付が読み取れない場合は date を null とする。入金（前受金・繰越金など大きな金額で左欄に記載）はin、支出はout。合計・小計行は除外。",
+        system: "日計票の画像から金額データを抽出してください。必ずJSON形式のみで返答し、preambleやmarkdownのコードブロック記号は含めないこと。\n\n【日付】写真右上の日付欄から月と日のみを読み取り \"MM/DD\" 形式で返す（年は不要）。日付が読み取れない場合は null。\n\n【No.欄】日付欄の上にNo.欄があり、値が2以上の場合は続きページとみなし、date を null にする（続きページは日付を空欄にする）。\n\n【種銭】各行の摘要欄に数字が書かれている場合はその数値を \"tane\" フィールドに入れる。なければ null。\n\n形式: {\"date\":\"MM/DD\"または null,\"rows\":[{\"tane\":数値またはnull,\"amount\":数値,\"type\":\"in\"または\"out\"}]}\n\n入金（前受金・繰越金など左欄に記載される大きな金額）はin、支出はout。合計・小計行は除外。",
         messages: [{
           role: "user",
           content: [
@@ -601,6 +602,7 @@
       tr.innerHTML = `
         <td><input type="checkbox" checked class="row-check" /></td>
         <td contenteditable="true" class="date-cell">${date || ""}</td>
+        <td contenteditable="true" class="tane-cell">${row.tane != null ? row.tane : ""}</td>
         <td contenteditable="true" class="amount-cell">${row.amount}</td>
         <td><span class="badge ${isIn ? "badge-in" : "badge-out"}">${isIn ? "入金" : "出金"}</span></td>
       `;
@@ -633,8 +635,9 @@
     resultTbody.querySelectorAll("tr").forEach((tr) => {
       if (!tr.querySelector(".row-check")?.checked) return;
       const date   = tr.querySelector(".date-cell").textContent.trim();
+      const tane   = tr.querySelector(".tane-cell").textContent.trim();
       const amount = parseInt(tr.querySelector(".amount-cell").textContent.replace(/,/g, ""), 10) || 0;
-      rows.push({ date, amount, type: tr.dataset.type === "in" ? "入金" : "出金" });
+      rows.push({ date, tane: tane ? Number(tane) : null, amount, type: tr.dataset.type === "in" ? "入金" : "出金" });
     });
 
     if (rows.length === 0) { showMsg("result-msg", "送信する行が選択されていません", "error"); return; }
